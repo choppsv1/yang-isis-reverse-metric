@@ -169,7 +169,7 @@ module ietf-isis-reverse-metric {
 	default false;
 	description
 	  "If true and there is a TE metric defined for this
-	   interface then do not send the TE metric sub-tlve in the
+	   interface then do not send the TE metric sub-TLV in the
 	   reverse metric TLV.";
       }
     }
