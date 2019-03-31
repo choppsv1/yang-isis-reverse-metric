@@ -66,7 +66,7 @@ Table of Contents
 
    This document defines a YANG module for managing the reverse metric
    extension to the intermediate system to intermediate system routeing
-   protocol (IS-IS) ([RFC8500], [ISO10589]).  Please refer to [RFC8500]
+   protocol (IS-IS) [RFC8500], [ISO10589].  Please refer to [RFC8500]
    for the description and definition of the functionality managed by
    this module.
 

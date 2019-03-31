@@ -20,7 +20,7 @@ routeing protocol.</t></abstract>  </front>  <middle>
 <section title="Introduction">
 <t>This document defines a YANG module for managing the reverse metric
 extension to the intermediate system to intermediate system routeing
-protocol (IS-IS) (<xref target="RFC8500"/>, <xref target="ISO10589"/>). Please refer to <xref target="RFC8500"/> for the
+protocol (IS-IS) <xref target="RFC8500"/>, <xref target="ISO10589"/>. Please refer to <xref target="RFC8500"/> for the
 description and definition of the functionality managed by this
 module.</t>
 
