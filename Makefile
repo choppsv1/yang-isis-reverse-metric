@@ -3,7 +3,7 @@ BASE := $(shell sed -e '/^\#+RFC_NAME:/!d;s/\#+RFC_NAME: *\(.*\)/\1/' $(ORG))
 VERSION := $(shell sed -e '/^\#+RFC_VERSION:/!d;s/\#+RFC_VERSION: *\([0-9]*\)/\1/' $(ORG))
 VBASE := publish/$(BASE)-$(VERSION)
 
-all: $(VBASE).xml $(VBASE).txt $(VBASE).html $(VBASE).pdf
+all: $(VBASE).xml $(VBASE).txt $(VBASE).html # $(VBASE).pdf
 
 clean:
 	rm -f ${BASE}.xml ${BASE}-*.{txt,html,pdf}
@@ -23,8 +23,8 @@ publish/%-$(VERSION).txt: %.xml
 publish/%-$(VERSION).html: %.xml
 	xml2rfc --html -o $@ $<
 
-publish/%-$(VERSION).pdf: %.xml
-	xml2rfc --pdf -o $@ $<
+# publish/%-$(VERSION).pdf: %.xml
+# 	xml2rfc --pdf -o $@ $<
 
 # ------------
 # Verification

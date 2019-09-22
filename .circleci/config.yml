@@ -1,0 +1,16 @@
+version: 2.1
+
+jobs:
+  build:
+    description: "Build with Emacs 26.3 org-mode 9.2.6"
+    docker:
+      - image: "choppsv1/org-rfc:26.3-9.2.6"
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          command: "make"
+      - run:
+          command: "make idnits"
+      - store_artifacts:
+          path: ~/project/publish

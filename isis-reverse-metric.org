@@ -34,8 +34,8 @@ The following is the YANG tree diagram ([[RFC8340]]) for the IS-IS
 reverse metric extension additions.
 
 #+name: IS-IS Reverse Metric YANG tree diagram.
-#+begin_src shell :var file=ietf-isis-reverse-metric-module :results output verbatim replace :wrap example :exports results
-pyang --tree-line-length=69 -f tree ${file} -p /home/chopps/w/yang/standard/ietf/RFC:/home/chopps/w/yang/experimental/ietf-extracted-YANG-modules
+#+begin_src shell :var file=ietf-isis-reverse-metric :results output verbatim replace :wrap example :exports results
+pyang --tree-line-length=69 -f tree ${file}
 #+end_src
 
 #+RESULTS: IS-IS Reverse Metric YANG tree diagram.
@@ -64,9 +64,10 @@ module: ietf-isis-reverse-metric
 The following is the YANG module for managing the IS-IS reverse metric
 functionality defined in [[RFC8500]].
 
-#+name: ietf-isis-reverse-metric-module
-#+header: :cmdline "-fyang --yang-canonical -p /home/chopps/w/yang/standard/ietf/RFC:/home/chopps/w/yang/experimental/ietf-extracted-YANG-modules"
-#+header: :file ietf-isis-reverse-metric.yang :results output code silent
+
+#+name: ietf-isis-reverse-metric
+#+header: :cmdline "-fyang --yang-canonical"
+#+header: :var dep1=dep-babel :var dep2=fetch-yang-files :file ietf-isis-reverse-metric.yang :results output code silent
 #+begin_src yang :exports code
   module ietf-isis-reverse-metric {
     yang-version 1.1;
@@ -256,3 +257,16 @@ which defines the functionality.
 ** RFC8500
 * Informative References
 ** RFC8340
+
+
+#+name: dep-babel
+#+begin_src emacs-lisp
+  (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
+#+end_src
+
+#+name: fetch-yang-files
+#+begin_src shell :results none silent :exports none
+  BASEURL=https://raw.githubusercontent.com/YangModels/yang/master
+  curl -O $BASEURL/experimental/ietf-extracted-YANG-modules/ietf-isis@2019-09-09.yang
+  curl -O $BASEURL/standard/ietf/RFC/ietf-routing@2016-11-04.yang
+#+end_src
