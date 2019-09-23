@@ -1,0 +1,34 @@
+
+*  YANG Data Model for the IS-IS Reverse Metric Extension
+
+CircleCI [[https://circleci.com/gh/choppsv1/yang-isis-reverse-metric][https://circleci.com/gh/choppsv1/yang-isis-reverse-metric.svg?style=svg]]
+
+This module and document are very simple and can serve as a useful template for
+other module authors.
+
+This is a github project for building and publishing "YANG Data Model for the
+IS-IS Reverse Metric Extension". The document is written in org-mode and uses
+[[https://github.com/choppsv1/org-rfc-export][ox-rfc.el]] to convert to XML, and then on to one of the xml2rfc output formats
+(e.g., HTML, TXT, etc).
+
+By using org-babel embedded sections we have automatic verification of the YANG
+module source, verification of YANG examples, and auto-generation of the YANG tree.
+
+To locally produce the documents one needs emacs and xml2rfc; however,
+the creation of the publishable documents is also automated using Circle
+CI on every git push.
+
+Github supports org mode so you can read the source in a marked up form:
+
+  [[isis-reverse-metric.org][Draft Source]]
+
+The badge at the top of this page indicates the current build status.
+
+The latest build artifacts (the actual drafts) are stored on CircleCI after
+successful build:
+
+  [[https://circleci.com/api/v1.1/project/github/choppsv1/yang-isis-reverse-metric/latest/artifacts/0/root/project/publish/draft-hopps-lsr-yang-isis-reverse-metric-01.html][HTML]], [[https://circleci.com/api/v1.1/project/github/choppsv1/yang-isis-reverse-metric/latest/artifacts/0/root/project/publish/draft-hopps-lsr-yang-isis-reverse-metric-01.txt][TXT]]
+
+** Copying and Distribution
+
+Feel free top copy this repo to start your own YANG model document.
