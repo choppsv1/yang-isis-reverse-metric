@@ -39,3 +39,13 @@ idnits: $(VBASE).txt
 
 ox-rfc.el:
 	curl -fLO 'https://raw.githubusercontent.com/choppsv1/org-rfc-export/master/ox-rfc.el'
+
+test: $(ORG)
+	@for tc in $$(awk '/^#\+NAME: test-/{print $$2}' $(ORG)); do \
+	    echo Executing test block $$tc; \
+	    result="$$(./run-babel-block.sh $(ORG) $$tc)"; \
+	    if [ -n "$$(echo $$result|grep FAIL)" ]; then \
+		printf "$$tc:FAIL:%s\n" "$$result"; \
+		exit 1; \
+	    fi; \
+	done

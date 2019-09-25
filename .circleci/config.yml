@@ -11,6 +11,8 @@ jobs:
       - run:
           command: "make"
       - run:
+          command: "make test"
+      - run:
           command: "make idnits"
       - store_artifacts:
           path: ~/project/publish
