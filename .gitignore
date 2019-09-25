@@ -1,5 +1,8 @@
+*.yang
+*.tex
+auto/
+build/
 .projectile
 idnits
-ietf-isis-reverse-metric.yang
-draft-hopps-lsr-yang-isis-reverse-metric.xml
+publish/*-latest.*
 ox-rfc.el

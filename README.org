@@ -31,7 +31,7 @@ The badge at the top of this page indicates the current build status.
 The latest build artifacts (the actual drafts) are stored on CircleCI after
 successful build:
 
-  [[https://circleci.com/api/v1.1/project/github/choppsv1/yang-isis-reverse-metric/latest/artifacts/0/root/project/publish/draft-hopps-lsr-yang-isis-reverse-metric-01.html][HTML]], [[https://circleci.com/api/v1.1/project/github/choppsv1/yang-isis-reverse-metric/latest/artifacts/0/root/project/publish/draft-hopps-lsr-yang-isis-reverse-metric-01.txt][TXT]]
+  [[https://circleci.com/api/v1.1/project/github/choppsv1/yang-isis-reverse-metric/latest/artifacts/0/root/project/publish/draft-hopps-lsr-yang-isis-reverse-metric-latest.html][HTML]], [[https://circleci.com/api/v1.1/project/github/choppsv1/yang-isis-reverse-metric/latest/artifacts/0/root/project/publish/draft-hopps-lsr-yang-isis-reverse-metric-latest.txt][TXT]]
 
 ** Copying and Distribution
 
