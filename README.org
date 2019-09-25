@@ -20,7 +20,11 @@ CI on every git push.
 
 Github supports org mode so you can read the source in a marked up form:
 
-  [[isis-reverse-metric.org][Draft Source]]
+  [[isis-reverse-metric.org][Github Marked-up Source]]
+
+Or the actaul raw source (what it looks like when you edit it in emacs, etc)
+
+  [[https://raw.githubusercontent.com/choppsv1/yang-isis-reverse-metric/master/isis-reverse-metric.org][Raw Source]]
 
 The badge at the top of this page indicates the current build status.
 
