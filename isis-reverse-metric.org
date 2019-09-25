@@ -260,7 +260,7 @@ which defines the functionality.
 
 
 #+name: dep-babel
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :results none :exports none
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
 #+end_src
 
