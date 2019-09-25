@@ -7,21 +7,19 @@ LBASE := publish/$(BASE)-latest
 all: $(LBASE).xml $(LBASE).txt $(LBASE).html # $(LBASE).pdf
 
 clean:
-	rm -f ${BASE}.xml ${BASE}-*.{txt,html,pdf} publish/*-latest.{html,pdf,txt}
+	rm -f $(BASE).xml $(BASE)-*.{txt,html,pdf} $(LBASE).*
 
-$(BASE).xml: $(ORG) ox-rfc.el
+$(VBASE).xml: $(ORG) ox-rfc.el
 	emacs -Q --batch --eval '(setq org-confirm-babel-evaluate nil)' -l ./ox-rfc.el $< -f ox-rfc-export-to-xml
+	mv $(BASE).xml $@
 
-publish/%-$(VERSION).xml: $(BASE).xml
-	cp $< $@
-
-publish/%-$(VERSION).txt: %.xml
+%.txt: %.xml
 	xml2rfc --text -o $@ $<
 
-publish/%-$(VERSION).html: %.xml
+%.html: %.xml
 	xml2rfc --html -o $@ $<
 
-publish/%-$(VERSION).pdf: %.xml
+%.pdf: %.xml
 	xml2rfc --pdf -o $@ $<
 
 $(LBASE).%: $(VBASE).%
