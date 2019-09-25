@@ -71,9 +71,9 @@ unset YANG_MODPATH
 if ! pyang -Werror --ietf $module 2>&1; then echo FAIL; fi
 #+end_src
 
-#+RESULTS: validate-module
-#+begin_example
-#+end_example
+#+RESULTS: test-validate-module
+#+begin_ignore
+#+end_ignore
 
 #+name: ietf-isis-reverse-metric
 #+header: :cmdline "-fyang --yang-canonical"
