@@ -64,6 +64,16 @@ module: ietf-isis-reverse-metric
 The following is the YANG module for managing the IS-IS reverse metric
 functionality defined in [[RFC8500]].
 
+#+NAME: validate-module
+#+HEADER: :var module=ietf-isis-reverse-metric
+#+begin_src bash :results output verbatim replace :wrap example :exports none
+unset YANG_MODPATH
+if ! pyang -Werror --ietf $module 2>&1; then echo "FAIL"; fi
+#+end_src
+
+#+RESULTS: validate-module
+#+begin_example
+#+end_example
 
 #+name: ietf-isis-reverse-metric
 #+header: :cmdline "-fyang --yang-canonical"
@@ -159,7 +169,7 @@ functionality defined in [[RFC8500]].
     augment "/rt:routing/rt:control-plane-protocols/"
       +"rt:control-plane-protocol/"
       +"isis:isis/isis:interfaces/isis:interface" {
-      when "rt:type = 'isis:isis'" {
+      when "../../../rt:type = 'isis:isis'" {
         description
           "This augment is only valid when routing protocol instance
            type is 'isis'.";
@@ -185,7 +195,7 @@ functionality defined in [[RFC8500]].
       +"rt:control-plane-protocol/"
       +"isis:isis/isis:interfaces/isis:interface/"
       +"isis:adjacencies/isis:adjacency" {
-      when "rt:type = 'isis:isis'" {
+      when "../../../../../rt:type = 'isis:isis'" {
         description
           "This augment is only valid when routing protocol instance
            type is 'isis'";
