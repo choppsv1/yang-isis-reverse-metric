@@ -2,6 +2,7 @@ BASE := $(shell sed -e '/^\#+RFC_NAME:/!d;s/\#+RFC_NAME: *\(.*\)/\1/' $(ORG))
 VERSION := $(shell sed -e '/^\#+RFC_VERSION:/!d;s/\#+RFC_VERSION: *\([0-9]*\)/\1/' $(ORG))
 VBASE := publish/$(BASE)-$(VERSION)
 LBASE := publish/$(BASE)-latest
+EMACSCMD := emacs -Q --batch --eval '(setq org-confirm-babel-evaluate nil)' -l ./ox-rfc.el
 
 all: $(LBASE).xml $(LBASE).txt $(LBASE).html # $(LBASE).pdf
 
@@ -9,7 +10,7 @@ clean:
 	rm -f $(BASE).xml $(BASE)-*.{txt,html,pdf} $(LBASE).*
 
 $(VBASE).xml: $(ORG) ox-rfc.el
-	emacs -Q --batch --eval '(setq org-confirm-babel-evaluate nil)' -l ./ox-rfc.el $< -f ox-rfc-export-to-xml
+	$(EMACSCMD) $< -f ox-rfc-export-to-xml
 	mv $(BASE).xml $@
 
 %.txt: %.xml
@@ -39,12 +40,9 @@ idnits: $(VBASE).txt
 ox-rfc.el:
 	curl -fLO 'https://raw.githubusercontent.com/choppsv1/org-rfc-export/master/ox-rfc.el'
 
-test: $(ORG)
-	@for tc in $$(awk '/^#\+NAME: test-/{print $$2}' $(ORG)); do \
-	    echo Executing test block $$tc; \
-	    result="$$(./run-babel-block.sh $(ORG) $$tc)"; \
-	    if [ -n "$$(echo $$result|grep FAIL)" ]; then \
+test: $(ORG) ox-rfc.el
+	result="$$($(EMACSCMD) $< -f ox-rfc-run-test-blocks)"; \
+	if [ -n "$$(echo $$result|grep FAIL)" ]; then \
 		printf "$$tc:FAIL:%s\n" "$$result"; \
 		exit 1; \
-	    fi; \
-	done
+	fi; \

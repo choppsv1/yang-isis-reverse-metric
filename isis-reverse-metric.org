@@ -65,15 +65,10 @@ The following is the YANG module for managing the IS-IS reverse metric
 functionality defined in [[RFC8500]].
 
 #+NAME: test-validate-module
-#+HEADER: :var module=ietf-isis-reverse-metric
-#+begin_src bash :results output verbatim replace :wrap example :exports none
+#+begin_src bash :var module=ietf-isis-reverse-metric :results silent :exports none
 unset YANG_MODPATH
 if ! pyang -Werror --ietf $module 2>&1; then echo FAIL; fi
 #+end_src
-
-#+RESULTS: test-validate-module
-#+begin_ignore
-#+end_ignore
 
 #+name: ietf-isis-reverse-metric
 #+header: :cmdline "-fyang --yang-canonical"
