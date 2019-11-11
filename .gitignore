@@ -4,5 +4,8 @@ auto/
 build/
 .projectile
 idnits
+draft/*
 publish/*-latest.*
 ox-rfc.el
+test-*.json
+test-*.xml
