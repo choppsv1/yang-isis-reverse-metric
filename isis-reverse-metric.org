@@ -33,7 +33,7 @@ Network Management Datastore Architecture defined in [[RFC8342]].
 The following is the YANG tree diagram ([[RFC8340]]) for the IS-IS
 reverse metric extension additions.
 
-#+name: IS-IS Reverse Metric YANG tree diagram.
+#+NAME: IS-IS Reverse Metric YANG tree diagram.
 #+begin_src shell :var file=ietf-isis-reverse-metric :results output verbatim replace :wrap example :exports results
   [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
   $DOCKER pyang --tree-line-length=69 -f tree ${file} 2> err.out;
@@ -70,14 +70,26 @@ module: ietf-isis-reverse-metric
        +--ro te-metric?   uint32
 #+end_example
 
+
 ** YANG Module
 
 The following is the YANG module for managing the IS-IS reverse metric
 functionality defined in [[RFC8500]].
 
-#+name: ietf-isis-reverse-metric
-#+header: :cmdline "-fyang --yang-canonical"
-#+header: :var dep1=dep-babel :file ietf-isis-reverse-metric.yang :results output code silent
+#+NAME: test-validate-module
+#+HEADER: :var module=ietf-isis-reverse-metric
+#+begin_src bash :results output verbatim replace :wrap example :exports none
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
+  if ! $DOCKER pyang --lax-quote-checks -Werror --ietf $module 2>&1; then echo FAIL; fi
+#+end_src
+
+#+RESULTS: test-validate-module
+#+begin_example
+#+end_example
+
+#+NAME: ietf-isis-reverse-metric
+#+HEADER: :cmdline "-fyang --yang-canonical"
+#+HEADER: :var dep1=dep-babel :file ietf-isis-reverse-metric.yang :results output code silent
 #+begin_src yang :exports code
   module ietf-isis-reverse-metric {
     yang-version 1.1;
@@ -173,6 +185,7 @@ functionality defined in [[RFC8500]].
     grouping tlv16-reverse-metric {
       description "IS-IS reverse metric TLV data.";
       container reverse-metric {
+        description "IS-IS reverse metric TLV data.";
         uses reverse-metric-data;
         leaf te-metric {
           type uint32;
@@ -221,13 +234,6 @@ functionality defined in [[RFC8500]].
       uses tlv16-reverse-metric;
     }
   }
-#+end_src
-
-#+name: test-validate-module
-#+header: :var module=ietf-isis-reverse-metric
-#+begin_src bash :results output verbatim replace :wrap example :exports none
-  PYANG="docker run -v $(pwd):/work labn/org-rfc pyang"
-  if ! $PYANG -Werror --ietf $module; then echo FAIL; fi
 #+end_src
 
 * IANA Considerations
@@ -293,14 +299,16 @@ which defines the functionality.
 
 * Examples
 
-Below is some example YANG XML data for the ietf-isis-reverse-metric module.
+** Example XML
+Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
 #+NAME: validate-xml-example
 #+HEADER: :var vfile=xml-example :var module=ietf-isis-reverse-metric
 #+begin_src bash :results output verbatim replace :wrap example :exports none
-  LINT="docker run -v $(pwd):/work labn/org-rfc yanglint -p /yang-drafts -p /yang --strict -t config"
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
   extramodules="/yang/iana-if-type.yang"
-  if ! $LINT $extramodules $module ${vfile} 2>&1 >/dev/null; then echo FAIL; fi
+  LINT="$DOCKER yanglint -p /yang-drafts -p /yang --strict -t config"
+  $LINT $extramodules $module ${vfile} 2>&1 || echo FAIL
 #+end_src
 
 #+RESULTS: validate-xml-example
@@ -310,10 +318,12 @@ Below is some example YANG XML data for the ietf-isis-reverse-metric module.
 #+CAPTION: Example XML data for ietf-isis-reverse-metric module.
 #+NAME: xml-example
 #+begin_src xml :file test-xml-example.xml :results output code silent :exports code
-  <if:interfaces xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+  <if:interfaces
+      xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces"
+      xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
     <if:interface>
       <if:name>eth0</if:name>
-      <if:type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ethernetCsmacd</if:type>
+      <if:type>ianaift:ethernetCsmacd</if:type>
     </if:interface>
   </if:interfaces>
   <rt:routing
@@ -344,12 +354,17 @@ Below is some example YANG XML data for the ietf-isis-reverse-metric module.
   </rt:routing>
 #+end_src
 
+** Example JSON
+
+Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
+
 #+NAME: validate-json-example
 #+HEADER: :var vfile=json-example :var module=ietf-isis-reverse-metric
 #+begin_src bash :results output verbatim replace :wrap example :exports none
-  LINT="docker run -v $(pwd):/work labn/org-rfc yanglint -p /yang-drafts -p /yang --strict -t config"
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
   extramodules="/yang/iana-if-type.yang"
-  if ! $LINT $extramodules $module ${vfile} 2>&1 >/dev/null; then echo FAIL; fi
+  LINT="$DOCKER yanglint -p /yang-drafts -p /yang --strict -t config"
+  $LINT $extramodules $module ${vfile} 2>&1 || echo FAIL
 #+end_src
 
 #+RESULTS: validate-json-example
@@ -401,7 +416,9 @@ Below is some example YANG XML data for the ietf-isis-reverse-metric module.
   }
 #+end_src
 
-#+name: dep-babel
+#+NAME: dep-babel
 #+begin_src emacs-lisp :results none :exports none
   (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
+  (setq fill-column 69)
+  (setq org-confirm-babel-evaluate nil)
 #+end_src
