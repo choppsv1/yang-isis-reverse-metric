@@ -2,9 +2,9 @@ version: 2.1
 
 jobs:
   build:
-    description: "Build with Emacs 26.3 org-mode 9.2.6"
+    description: "Build with Emacs 26.3 org-mode 9.2.2"
     docker:
-      - image: "choppsv1/org-rfc:26.3-9.2.6"
+      - image: "labn/org-rfc"
     working_directory: ~/project
     steps:
       - checkout
