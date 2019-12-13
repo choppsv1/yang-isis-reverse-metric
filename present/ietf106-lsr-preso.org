@@ -1,0 +1,259 @@
+# -*- org-latex-listings: t -*-
+#+TITLE: YANG IS-IS Reverse Metric - 02
+#+AUTHOR: Christian Hopps \newline \textit{LabN Consulting}
+#+EMAIL: chopps@chopps.org
+#+STARTUP: beamer content indent
+#+OPTIONS: author:t date:nil h:2 toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+
+#+LATEX_CLASS: beamer
+#+OPTIONS: author:t date:nil h:2 toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+# #+LaTeX_CLASS_OPTIONS: [24pt,presentation]
+#+LATEX_CLASS_OPTIONS: [bigger, aspectratio=169]
+# #+LATEX_CLASS_OPTIONS: [24pt, aspectratio=169]
+# #+LATEX_CLASS_OPTIONS: [24pt]
+#+STARTUP: beamer content
+
+# #+BEAMER_HEADER: \author{\texorpdfstring{Christian E. Hopps \textit{\scriptsize{<chopps@chopps.org>}}\newline Lou Berger \textit{\scriptsize{<lberger@labn.net>}}\newline Dean Bogdanovic \textit{\scriptsize{<ivandean@gmail.com>}}}{Some Long Name??????}}
+# #+BEAMER_HEADER: \author{\texorpdfstring{Christian E. Hopps\textit{\scriptsize{<chopps@chopps.org>}}\newline LabN Consulting}}
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+#+BEAMER_THEME: metropolis [everytitleformat=regular]
+
+#+BEAMER_HEADER:\usepackage{listings}% http://ctan.org/pkg/listings
+
+#+BEAMER_HEADER:\lstset{
+#+BEAMER_HEADER:  language=XML,
+#+BEAMER_HEADER:  basicstyle=\ttfamily,
+#+BEAMER_HEADER:  moredelim=[is][\color{red}]{_}{_}
+#+BEAMER_HEADER:}
+
+#+MACRO: mkbold @@latex:\textbf{@@$1@@latex:}@@
+#+MACRO: mkitalic @@latex:\textit{@@$1@@latex:}@@
+#+MACRO: mkcode @@latex:\texttt{@@$1@@latex:}@@
+#+MACRO: mkred @@latex:{\color{red}@@$1@@latex:}@@
+#+MACRO: mkblue @@latex:{\color{blue}@@$1@@latex:}@@
+
+#+BEAMER_HEADER: \metroset{sectionpage=none}
+
+# XXX this doesn't seem to work
+#+LaTeX_HEADER: \defbeamertemplate{footline}{plain}{\begin{beamercolorbox}[wd=\textwidth, sep=3ex]{footline}\usebeamerfont{page number in head/foot}\usebeamertemplate*{frame footer}
+#+LaTeX_HEADER: \tiny\color{blue}{IETF-106}\hfill\usebeamertemplate*{frame numbering}
+#+LaTeX_HEADER: \end{beamercolorbox}}
+
+* YANG IS-IS Reverse Metric - 02
+** Update since -00
+- Added level-1 and level-2 sub-containers
+- Changed flags from ~type bits~ to ~type boolean~
+- Added global ~enable-receive~ flag.
+- Rearranged grouping.
+** Module Global Changes
+:PROPERTIES:
+:BEAMER_opt: fragile
+:END:
+*** Old Yang Module                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.50
+:BEAMER_opt: [t]
+:END:
+Old Yang
+\newline
+#+begin_latex
+\scriptsize
+\begin{verbatim}
+
+module: ietf-isis-reverse-metric
+
+\end{verbatim}
+#+end_latex
+*** New Yang Module :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.50
+:BEAMER_opt: [t]
+:END:
+New Yang
+\newline
+#+begin_latex
+\scriptsize
+\begin{verbatim}
+
+module: ietf-isis-reverse-metric
+  augment /rt:routing
+            /rt:control-plane-protocols
+            /rt:control-plane-protocol
+            /isis:isis:
+    +--rw reverse-metric
+       +--rw enable-receive?   boolean
+
+\end{verbatim}
+#+end_latex
+** Module Interface Changes
+:PROPERTIES:
+:BEAMER_opt: fragile
+:END:
+*** Old Yang Module                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.50
+:BEAMER_opt: [t]
+:END:
+Old Yang
+\newline
+#+begin_latex
+\tiny
+\begin{verbatim}
+
+module: ietf-isis-reverse-metric
+  augment /rt:routing
+          ... [wrong path] ...
+          /isis:interface:
+       +--rw reverse-metric
+          +--rw reverse-metric
+          |  +--rw metric?   isis:wide-metric
+          |  +--rw flags?    bits
+          +--rw exclude-te-metric?   boolean
+
+\end{verbatim}
+#+end_latex
+*** New Yang Module :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.50
+:BEAMER_opt: [t]
+:END:
+New Yang
+\newline
+#+begin_latex
+\tiny
+\begin{verbatim}
+
+module: ietf-isis-reverse-metric
+  augment /rt:routing
+          ... [correct path] ...
+          /isis:interface:
+    +--rw reverse-metric
+       +--rw reverse-metric
+       |  +--rw metric?              isis:wide-metric
+       |  +--rw flags
+       |  |  +--rw whole-lan?           boolean
+       |  |  +--rw allow-unreachable?   boolean
+       |  +--rw exclude-te-metric?   boolean
+       +--rw level-1
+       |  +--rw reverse-metric
+       |     +--rw metric?              isis:wide-metric
+       |     +--rw flags
+       |     |  +--rw whole-lan?           boolean
+       |     |  +--rw allow-unreachable?   boolean
+       |     +--rw exclude-te-metric?   boolean
+       +--rw level-2
+          +--rw reverse-metric
+             ...
+
+\end{verbatim}
+#+end_latex
+** Module Adjacency Changes
+:PROPERTIES:
+:BEAMER_opt: fragile
+:END:
+*** Old Yang Module                                                 :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.50
+:BEAMER_opt: [t]
+:END:
+Old Yang
+\newline
+#+begin_latex
+\scriptsize
+\begin{verbatim}
+
+module: ietf-isis-reverse-metric
+   augment /rt:routing
+           ...
+           /isis:adjacency:
+     +--ro reverse-metric
+     |  +--ro metric?   isis:wide-metric
+     |  +--ro flags?    bits
+     +--ro te-metric?        uint32
+
+\end{verbatim}
+#+end_latex
+*** New Yang Module :BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.50
+:BEAMER_opt: [t]
+:END:
+New Yang
+\newline
+#+begin_latex
+\scriptsize
+\begin{verbatim}
+
+module: ietf-isis-reverse-metric
+  augment /rt:routing
+           ...
+          /isis:adjacency:
+    +--ro reverse-metric
+       +--ro metric?      isis:wide-metric
+       +--ro flags
+       |  +--ro whole-lan?           boolean
+       |  +--ro allow-unreachable?   boolean
+       +--ro te-metric?   uint32
+
+\end{verbatim}
+#+end_latex
+** Example XML Global Receive Enabled
+:PROPERTIES:
+:BEAMER_opt: fragile
+:END:
+#+begin_latex
+\scriptsize
+\begin{lstlisting}
+
+  <rt:routing
+      xmlns:rt="urn:ietf:params:xml:ns:yang:ietf-routing"
+      xmlns:isis="urn:ietf:params:xml:ns:yang:ietf-isis"
+      xmlns:rm="urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric">
+    <rt:control-plane-protocols>
+      <rt:control-plane-protocol>
+        <rt:type>isis:isis</rt:type>
+        <rt:name>default</rt:name>
+        <isis:isis>
+          <isis:area-address>00</isis:area-address>
+          _<rm:reverse-metric>_
+            _<rm:enable-receive>true</rm:enable-receive>_
+          _</rm:reverse-metric>_
+        </isis:isis>
+      </rt:control-plane-protocol>
+    </rt:control-plane-protocols>
+  </rt:routing>
+
+\end{lstlisting}
+#+end_latex
+
+** Example JSON Interface Config
+:PROPERTIES:
+:BEAMER_opt: fragile
+:END:
+#+begin_latex
+\scriptsize
+\begin{lstlisting}
+{
+  "ietf-interfaces:interfaces": { ...
+  "ietf-routing:routing": {
+    "control-plane-protocols": {
+      "control-plane-protocol": [ {
+        "type": "ietf-isis:isis",
+        "name": "default",
+        "ietf-isis:isis": {
+          "interfaces": {
+             "interface": [
+               {
+                 "name": "eth0",
+                 _"ietf-isis-reverse-metric:reverse-metric": {
+                   "level-1": {
+                     "reverse-metric": {
+                       "metric": 65535,
+                       "exclude-te-metric": true_
+  ...
+
+\end{lstlisting}
+#+end_latex
+
+** Moving Forward
+- WG Adoption?

@@ -6,10 +6,8 @@ VBASE := draft/$(BASE)-$(VERSION)
 LBASE := draft/$(BASE)-latest
 
 # If you have docker you can avoid having to install anything by leaving this.
-#export DOCKRUN ?= docker run --network=host -v $$(pwd):/work labn/org-rfc
-
+export DOCKRUN ?= docker run --network=host -v $$(pwd):/work labn/org-rfc
 EMACSCMD := $(DOCKRUN) emacs -Q --batch --debug-init --eval '(setq org-confirm-babel-evaluate nil)' -l ./ox-rfc.el
-# EMACSCMD := emacs -Q --batch --eval '(setq org-confirm-babel-evaluate nil)' -l ./ox-rfc.el
 
 all: $(LBASE).xml $(LBASE).txt $(LBASE).html # $(LBASE).pdf
 
@@ -30,19 +28,19 @@ publish-update:
 draft:
 	mkdir -p draft
 
-$(VBASE).xml: $(ORG) ox-rfc.el
+$(VBASE).xml: $(ORG) ox-rfc.el test
 	mkdir -p draft
 	$(EMACSCMD) $< -f ox-rfc-export-to-xml
 	mv $(BASE).xml $@
 
-%.txt: %.xml
-	xml2rfc --text -o $@ $<
+%-$(VERSION).txt: %-$(VERSION).xml
+	$(DOCKRUN) xml2rfc --text $< > $@
 
-%.html: %.xml
-	xml2rfc --html -o $@ $<
+%-$(VERSION).html: %-$(VERSION).xml
+	$(DOCKRUN) xml2rfc --html $< > $@
 
-%.pdf: %.xml
-	xml2rfc --pdf -o $@ $<
+%-$(VERSION).pdf: %-$(VERSION).xml
+	$(DOCKRUN) xml2rfc --pdf $< > $@
 
 $(LBASE).%: $(VBASE).%
 	cp $< $@
@@ -62,9 +60,15 @@ idnits: $(VBASE).txt
 ox-rfc.el:
 	curl -fLO 'https://raw.githubusercontent.com/choppsv1/org-rfc-export/master/ox-rfc.el'
 
+run-test: $(ORG) ox-rfc.el
+	$(EMACSCMD) $< -f ox-rfc-run-test-blocks 2>&1
+
 test: $(ORG) ox-rfc.el
-	result="$$($(EMACSCMD) $< -f ox-rfc-run-test-blocks)"; \
-	if [ -n "$$(echo $$result|grep FAIL)" ]; then \
-		printf "$$tc:FAIL:%s\n" "$$result"; \
+	@echo Testing $<
+	@result="$$($(EMACSCMD) $< -f ox-rfc-run-test-blocks 2>&1)"; \
+	if [ -n "$$(echo \"$$result\"|grep FAIL)" ]; then \
+		grep RESULT <<< "$$result"; \
 		exit 1; \
-	fi; \
+	else \
+		grep RESULT <<< "$$result"; \
+	fi;

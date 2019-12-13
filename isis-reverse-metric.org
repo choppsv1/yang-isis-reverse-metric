@@ -1,8 +1,8 @@
 # -*- fill-column: 69; org-confirm-babel-evaluate: nil -*-
-#+STARTUP: align entitiespretty hidestars inlineimages latexpreview noindent showall
+# #+STARTUP: align entitiespretty hidestars inlineimages latexpreview noindent showall
 #+OPTIONS: prop:nil title:t toc:t \n:nil ::t |:t ^:{} -:t *:t ':nil
 
-#+TITLE: YANG Data Model for the IS-IS Reverse Metric Extension
+#+TITLE: YANG Module for IS-IS Reverse Metric
 #+AUTHOR: Christian Hopps
 #+EMAIL: chopps@chopps.org
 #+AFFILIATION: LabN Consulting, L.L.C.
@@ -34,42 +34,50 @@ The following is the YANG tree diagram ([[RFC8340]]) for the IS-IS
 reverse metric extension additions.
 
 #+NAME: IS-IS Reverse Metric YANG tree diagram.
-#+begin_src shell :var file=ietf-isis-reverse-metric :results output verbatim replace :wrap example :exports results
-  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
-  $DOCKER pyang --tree-line-length=69 -f tree ${file} 2> err.out;
-#+end_src
+#+CALL: generate-tree(module=ietf-isis-reverse-metric)
 
 #+RESULTS: IS-IS Reverse Metric YANG tree diagram.
 #+begin_example
 
 module: ietf-isis-reverse-metric
   augment /rt:routing/rt:control-plane-protocols
+            /rt:control-plane-protocol/isis:isis:
+    +--rw reverse-metric
+       +--rw enable-receive?   boolean
+  augment /rt:routing/rt:control-plane-protocols
             /rt:control-plane-protocol/isis:isis/isis:interfaces
             /isis:interface:
     +--rw reverse-metric
        +--rw reverse-metric
        |  +--rw metric?              isis:wide-metric
-       |  +--rw flags?               bits
+       |  +--rw flags
+       |  |  +--rw whole-lan?           boolean
+       |  |  +--rw allow-unreachable?   boolean
        |  +--rw exclude-te-metric?   boolean
        +--rw level-1
        |  +--rw reverse-metric
        |     +--rw metric?              isis:wide-metric
-       |     +--rw flags?               bits
+       |     +--rw flags
+       |     |  +--rw whole-lan?           boolean
+       |     |  +--rw allow-unreachable?   boolean
        |     +--rw exclude-te-metric?   boolean
        +--rw level-2
           +--rw reverse-metric
              +--rw metric?              isis:wide-metric
-             +--rw flags?               bits
+             +--rw flags
+             |  +--rw whole-lan?           boolean
+             |  +--rw allow-unreachable?   boolean
              +--rw exclude-te-metric?   boolean
   augment /rt:routing/rt:control-plane-protocols
             /rt:control-plane-protocol/isis:isis/isis:interfaces
             /isis:interface/isis:adjacencies/isis:adjacency:
     +--ro reverse-metric
        +--ro metric?      isis:wide-metric
-       +--ro flags?       bits
+       +--ro flags
+       |  +--ro whole-lan?           boolean
+       |  +--ro allow-unreachable?   boolean
        +--ro te-metric?   uint32
 #+end_example
-
 
 ** YANG Module
 
@@ -77,33 +85,25 @@ The following is the YANG module for managing the IS-IS reverse metric
 functionality defined in [[RFC8500]].
 
 #+NAME: test-validate-module
-#+HEADER: :var module=ietf-isis-reverse-metric
-#+begin_src bash :results output verbatim replace :wrap example :exports none
-  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
-  if ! $DOCKER pyang --lax-quote-checks -Werror --ietf $module 2>&1; then echo FAIL; fi
-#+end_src
-
-#+RESULTS: test-validate-module
-#+begin_example
-#+end_example
+#+CALL: validate-module(module=ietf-isis-reverse-metric)
 
 #+NAME: ietf-isis-reverse-metric
-#+HEADER: :cmdline "-fyang --yang-canonical"
-#+HEADER: :var dep1=dep-babel :file ietf-isis-reverse-metric.yang :results output code silent
+#+HEADER: :file ietf-isis-reverse-metric.yang :results output silent :cache yes
 #+begin_src yang :exports code
   module ietf-isis-reverse-metric {
     yang-version 1.1;
     namespace "urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric";
     prefix isis-rmetric;
 
-    import ietf-isis { prefix isis; }
     import ietf-routing { prefix "rt"; }
+    import ietf-isis { prefix "isis"; }
 
     organization
-      "IETF NETMOD Working Group (NETMOD)";
+      "IETF LSR Working Group (LSR)";
+
     contact
-      "WG Web:  <https://tools.ietf.org/wg/netmod/>
-       WG List: <mailto:netmod@ietf.org>
+      "WG Web:  <https://tools.ietf.org/wg/lsr/>
+       WG List: <mailto:lsr@ietf.org>
 
        Author: Christian Hopps
                <mailto:chopps@chopps.org>";
@@ -129,7 +129,7 @@ functionality defined in [[RFC8500]].
        (https://tools.ietf.org/html/rfcXXXX); see the RFC itself for
        full legal notices.";
 
-    revision 2019-03-31 {
+    revision 2019-11-22 {
       description "Initial Revision";
       reference "RFC XXXX: YANG IS-IS Reverse Metric";
     }
@@ -140,33 +140,30 @@ functionality defined in [[RFC8500]].
         type isis:wide-metric;
         description "The reverse metric value.";
       }
-      leaf flags {
-        type bits {
-          bit whole-lan {
-            position 0;
-            description
-              "The 'whole LAN' or W-bit. If true then a DIS
-               processing this reverse metric will add the metric
-               value to all the nodes it advertises in the
-               pseudo-node LSP for this interface. Otherwise it will
-               only increment the metric for the advertising node in
-               the pseudo-node LSP for this interface.";
-          }
-          bit allow-unreachable {
-            position 1;
-            description
-              "The 'allow-unreachable' or U-bit. If true it allows
-               the neighbor to increment the overall metric up to
-               2^24-1 rather than the lesser maximum of 2^24-2, and
-               if done will cause traffic to stop using rather than
-               avoid using the interface.";
-          }
-        }
+
+      container flags {
         description "The reverse metric flag values.";
+        leaf whole-lan {
+          type boolean;
+          description
+              "The 'whole LAN' or W-bit. If true then a DIS processing this
+              reverse metric will add the metric value to all the nodes it
+              advertises in the pseudo-node LSP for this interface.
+              Otherwise it will only increment the metric for the
+              advertising node in the pseudo-node LSP for this interface.";
+        }
+        leaf allow-unreachable {
+          type boolean;
+          description
+              "The 'allow-unreachable' or U-bit. If true it allows the
+              neighbor to increment the overall metric up to 2^24-1 rather
+              than the lesser maximum of 2^24-2, and if done will cause
+              traffic to stop using rather than avoid using the interface.";
+        }
       }
     }
 
-    grouping reverse-metric-config-data {
+    grouping reverse-metric-if-config-data {
       description "IS-IS reverse metric config data.";
       container reverse-metric {
         description "IS-IS reverse metric data.";
@@ -196,6 +193,31 @@ functionality defined in [[RFC8500]].
 
     augment "/rt:routing/rt:control-plane-protocols/"
       +"rt:control-plane-protocol/"
+      +"isis:isis" {
+      when "../rt:type = 'isis:isis'" {
+        description
+          "This augment is only valid when routing protocol instance
+           type is 'isis'.";
+      }
+
+      description
+        "The reverse metric configuration for an IS-IS instance.";
+
+      container reverse-metric {
+        description "Global reverse metric configuration.";
+        leaf enable-receive {
+          type boolean;
+          default false;
+          description
+            "Enable handling of reverse metric announcements from
+             neighbors. By default reverse metric handling is disabled
+             and must be explicitly enabled through this configuration.";
+        }
+      }
+    }
+
+    augment "/rt:routing/rt:control-plane-protocols/"
+      +"rt:control-plane-protocol/"
       +"isis:isis/isis:interfaces/isis:interface" {
       when "../../../rt:type = 'isis:isis'" {
         description
@@ -208,14 +230,14 @@ functionality defined in [[RFC8500]].
 
       container reverse-metric {
         description "Announce a reverse metric to neighbors.";
-        uses reverse-metric-config-data;
+        uses reverse-metric-if-config-data;
         container level-1 {
           description "Announce a reverse metric to level-1 neighbors.";
-          uses reverse-metric-config-data;
+          uses reverse-metric-if-config-data;
         }
         container level-2 {
           description "Announce a reverse metric to level-2 neighbors.";
-          uses reverse-metric-config-data;
+          uses reverse-metric-if-config-data;
         }
       }
     }
@@ -237,7 +259,6 @@ functionality defined in [[RFC8500]].
 #+end_src
 
 * IANA Considerations
-
 ** Updates to the IETF XML Registry
 
 This document registers a URI in the "IETF XML Registry" [[RFC3688]].
@@ -295,29 +316,44 @@ which defines the functionality.
 ** RFC8500
 * Informative References
 ** RFC8340
-
-
 * Examples
+** Example Enable XML
+Below is an example of YANG XML data to enable reverse metric processing.
 
-** Example XML
-Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
+#+NAME: test-enable-xml-example
+#+CALL: validate-config(file=enable-xml-example, module=ietf-isis-reverse-metric, extra="/yang/iana-if-type.yang")
 
-#+NAME: validate-xml-example
-#+HEADER: :var vfile=xml-example :var module=ietf-isis-reverse-metric
-#+begin_src bash :results output verbatim replace :wrap example :exports none
-  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
-  extramodules="/yang/iana-if-type.yang"
-  LINT="$DOCKER yanglint -p /yang-drafts -p /yang --strict -t config"
-  $LINT $extramodules $module ${vfile} 2>&1 || echo FAIL
+#+CAPTION: Example XML data to enable reverse metric processing.
+#+NAME: enable-xml-example
+#+begin_src xml :file test-enable-example.xml :results output code silent :exports code
+  <rt:routing
+      xmlns:rt="urn:ietf:params:xml:ns:yang:ietf-routing"
+      xmlns:isis="urn:ietf:params:xml:ns:yang:ietf-isis"
+      xmlns:rm="urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric">
+    <rt:control-plane-protocols>
+      <rt:control-plane-protocol>
+        <rt:type>isis:isis</rt:type>
+        <rt:name>default</rt:name>
+        <isis:isis>
+          <isis:area-address>00</isis:area-address>
+          <rm:reverse-metric>
+            <rm:enable-receive>true</rm:enable-receive>
+          </rm:reverse-metric>
+        </isis:isis>
+      </rt:control-plane-protocol>
+    </rt:control-plane-protocols>
+  </rt:routing>
 #+end_src
 
-#+RESULTS: validate-xml-example
-#+begin_example
-#+end_example
+** Example Use XML
+Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
+
+#+NAME: test-use-xml-example
+#+CALL: validate-config(file=xml-example, module=ietf-isis-reverse-metric, extra="/yang/iana-if-type.yang")
 
 #+CAPTION: Example XML data for ietf-isis-reverse-metric module.
 #+NAME: xml-example
-#+begin_src xml :file test-xml-example.xml :results output code silent :exports code
+#+begin_src xml :file test-use-xml-example.xml :results output code silent :exports code
   <if:interfaces
       xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces"
       xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
@@ -358,18 +394,8 @@ Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
 Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
-#+NAME: validate-json-example
-#+HEADER: :var vfile=json-example :var module=ietf-isis-reverse-metric
-#+begin_src bash :results output verbatim replace :wrap example :exports none
-  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
-  extramodules="/yang/iana-if-type.yang"
-  LINT="$DOCKER yanglint -p /yang-drafts -p /yang --strict -t config"
-  $LINT $extramodules $module ${vfile} 2>&1 || echo FAIL
-#+end_src
-
-#+RESULTS: validate-json-example
-#+begin_example
-#+end_example
+#+NAME: test-json-example
+#+CALL: validate-config(file=json-example, module=ietf-isis-reverse-metric, extra="/yang/iana-if-type.yang")
 
 #+CAPTION: Example JSON data for level-1 only reverse metric.
 #+NAME: json-example
@@ -418,7 +444,37 @@ Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
 #+NAME: dep-babel
 #+begin_src emacs-lisp :results none :exports none
-  (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
-  (setq fill-column 69)
-  (setq org-confirm-babel-evaluate nil)
+    (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
+    (setq fill-column 69)
+    (setq org-confirm-babel-evaluate nil)
+#+end_src
+
+#+NAME: generate-tree
+#+HEADER: :var dep1=dep-babel
+#+begin_src shell :results output verbatim replace :wrap example :exports none
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
+  $DOCKER pyang --tree-line-length=69 -f tree ${module} 2> err.out;
+#+end_src
+
+#+NAME: validate-module
+#+HEADER: :var dep1=dep-babel
+#+begin_src bash :results output verbatim replace :wrap comment :exports none
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
+  if ! $DOCKER pyang --lax-quote-checks -Werror --ietf $module 2>&1; then echo FAIL; fi
+#+end_src
+
+#+NAME: validate-config
+#+HEADER: :var dep1=dep-babel
+#+begin_src bash :results output verbatim replace :wrap comment :exports none
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
+  LINT="$DOCKER yanglint -p /yang-drafts -p /yang --strict -t config"
+  $LINT $extra $module ${file} 2>&1 || echo FAIL
+#+end_src
+
+#+NAME: validate-data
+#+HEADER: :var dep1=dep-babel
+#+begin_src bash :results output verbatim replace :wrap comment :exports none
+  [ -d /yang ] || DOCKER="docker run --net=host -v $(pwd):/work labn/org-rfc"
+  LINT="$DOCKER yanglint -p /yang-drafts -p /yang --strict -t data"
+  $LINT $extra $module ${file} 2>&1 || echo FAIL
 #+end_src
