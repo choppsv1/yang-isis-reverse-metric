@@ -33,7 +33,9 @@ publish: git-clean-check $(VBASE).xml $(VBASE).txt $(VBASE).html
 	git commit -m "yank.mk publish-$(DTYPE)-$(VERSION)"
 	git push origin $(PBRANCH)
 	git checkout master
+	git merge --ff-only $(PBRANCH)
 	sed -i -e 's/\#+RFC_VERSION: *\([0-9]*\)/\#+RFC_VERSION: $(NEXT_VERSION)/' $(ORG)
+	git commit -am "yank.mk new version post-publish"
 
 #republish:
 #	sed -i -e 's/\#+RFC_VERSION: *\([0-9]*\)/\#+RFC_VERSION: $(PREV_VERSION)/' $(ORG)
