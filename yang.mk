@@ -10,7 +10,9 @@ LBASE := draft/$(BASE)-latest
 SHELL := /bin/bash
 
 # If you have docker you can avoid having to install anything by leaving this.
+ifeq ($(CIRCLECI),)
 export DOCKRUN ?= docker run --network=host -v $$(pwd):/work labn/org-rfc
+endif
 EMACSCMD := $(DOCKRUN) emacs -Q --batch --debug-init --eval '(setq org-confirm-babel-evaluate nil)' -l ./ox-rfc.el
 
 all: $(LBASE).xml $(LBASE).txt $(LBASE).html # $(LBASE).pdf
