@@ -1,6 +1,9 @@
 BASE := $(shell sed -e '/^\#+RFC_NAME:/!d;s/\#+RFC_NAME: *\(.*\)/\1/' $(ORG))
 VERSION := $(shell sed -e '/^\#+RFC_VERSION:/!d;s/\#+RFC_VERSION: *\([0-9]*\)/\1/' $(ORG))
-NEXT_VERSION := $(shell printf "$$(($(VERSION) + 1))")
+NEXT_VERSION := $(shell printf "%02d" "$$(($(VERSION) + 1))")
+PREV_VERSION := $(shell printf "%02d" "$$(($(VERSION) - 1))")
+DTYPE := $(word 2,$(subst -, ,$(BASE)))
+PBRANCH := publish-$(DTYPE)-$(VERSION)
 PBASE := publish/$(BASE)-$(VERSION)
 VBASE := draft/$(BASE)-$(VERSION)
 LBASE := draft/$(BASE)-latest
@@ -15,16 +18,30 @@ all: $(LBASE).xml $(LBASE).txt $(LBASE).html # $(LBASE).pdf
 clean:
 	rm -f $(BASE).xml $(BASE)-*.{txt,html,pdf} $(LBASE).*
 
+git-clean-check:
+	@echo Checking for git clean status
+	@STATUS="$$(git status -s)"; [[ -z "$$STATUS" ]] || echo "$$STATUS"
+
 .PHONY: publish
-publish: $(VBASE).xml $(VBASE).txt $(VBASE).html
+publish: git-clean-check $(VBASE).xml $(VBASE).txt $(VBASE).html
 	if [ -f $(PBASE).xml ]; then echo "$(PBASE).xml already present, increment version?"; exit 1; fi
 	cp $(VBASE).xml $(VBASE).txt $(VBASE).html publish
+	git checkout -b $(PBRANCH)
+	git tag -m "yank.mk publish-$(DTYPE)-$(VERSION)" bp-$(PBRANCH)
+	git push --tags
 	git add $(PBASE).xml $(PBASE).txt $(PBASE).html
+	git commit -m "yank.mk publish-$(DTYPE)-$(VERSION)"
+	git push origin $(PBRANCH)
+	git checkout master
 	sed -i -e 's/\#+RFC_VERSION: *\([0-9]*\)/\#+RFC_VERSION: $(NEXT_VERSION)/' $(ORG)
 
-publish-update:
-	cp $(VBASE).xml $(VBASE).txt $(VBASE).html publish
-	git add $(PBASE).xml $(PBASE).txt $(PBASE).html
+#republish:
+#	sed -i -e 's/\#+RFC_VERSION: *\([0-9]*\)/\#+RFC_VERSION: $(PREV_VERSION)/' $(ORG)
+#	cp $(VBASE).xml $(VBASE).txt $(VBASE).html publish
+#	git add $(PBASE).xml $(PBASE).txt $(PBASE).html
+#	git commit -m "publish-$(DTYPE)-$(VERSION)-update"
+#	git tag -a -f -m "yank.mk publish-$(DTYPE)-$(VERSION) update" publish-$(DTYPE)-$(VERSION)
+#	sed -i -e 's/\#+RFC_VERSION: *\([0-9]*\)/\#+RFC_VERSION: $(VERSION)/' $(ORG)
 
 draft:
 	mkdir -p draft
