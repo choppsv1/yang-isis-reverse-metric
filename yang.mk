@@ -68,8 +68,8 @@ test: $(ORG) ox-rfc.el
 	@echo Testing $<
 	@result="$$($(EMACSCMD) $< -f ox-rfc-run-test-blocks 2>&1)"; \
 	if [ -n "$$(echo \"$$result\"|grep FAIL)" ]; then \
-		grep RESULT <<< "$$result"; \
+		grep RESULT <<< "$$result" || true; \
 		exit 1; \
 	else \
-		grep RESULT <<< "$$result"; \
+		grep RESULT <<< "$$result" || true; \
 	fi;
