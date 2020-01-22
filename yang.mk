@@ -4,6 +4,7 @@ NEXT_VERSION := $(shell printf "$$(($(VERSION) + 1))")
 PBASE := publish/$(BASE)-$(VERSION)
 VBASE := draft/$(BASE)-$(VERSION)
 LBASE := draft/$(BASE)-latest
+SHELL := /bin/bash
 
 # If you have docker you can avoid having to install anything by leaving this.
 export DOCKRUN ?= docker run --network=host -v $$(pwd):/work labn/org-rfc
