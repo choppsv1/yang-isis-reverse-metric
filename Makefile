@@ -1,2 +1,2 @@
 ORG := isis-reverse-metric.org
-include yang.mk
+include mk/yang.mk
