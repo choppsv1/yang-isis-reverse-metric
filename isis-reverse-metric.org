@@ -88,7 +88,7 @@ functionality defined in [[RFC8500]].
 #+CALL: validate-module(module=ietf-isis-reverse-metric)
 
 #+NAME: ietf-isis-reverse-metric
-#+HEADER: :file ietf-isis-reverse-metric.yang :results output silent :cache yes
+#+HEADER: :file ietf-isis-reverse-metric.yang :results output file silent :cache yes
 #+begin_src yang :exports code
   module ietf-isis-reverse-metric {
     yang-version 1.1;
@@ -325,7 +325,7 @@ Below is an example of YANG XML data to enable reverse metric processing.
 
 #+CAPTION: Example XML data to enable reverse metric processing.
 #+NAME: enable-xml-example
-#+begin_src xml :file test-enable-example.xml :results output code silent :exports code
+#+begin_src xml :file test-enable-example.xml :results output code file silent :exports code
   <rt:routing
       xmlns:rt="urn:ietf:params:xml:ns:yang:ietf-routing"
       xmlns:isis="urn:ietf:params:xml:ns:yang:ietf-isis"
@@ -353,7 +353,7 @@ Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
 #+CAPTION: Example XML data for ietf-isis-reverse-metric module.
 #+NAME: xml-example
-#+begin_src xml :file test-use-xml-example.xml :results output code silent :exports code
+#+begin_src xml :file test-use-xml-example.xml :results output code file silent :exports code
   <if:interfaces
       xmlns:if="urn:ietf:params:xml:ns:yang:ietf-interfaces"
       xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">
@@ -399,7 +399,7 @@ Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
 #+CAPTION: Example JSON data for level-1 only reverse metric.
 #+NAME: json-example
-#+begin_src json :file test-json-example.json :results output code silent :exports code
+#+begin_src json :file test-json-example.json :results output code file silent :exports code
   {
     "ietf-interfaces:interfaces": {
       "interface": [
