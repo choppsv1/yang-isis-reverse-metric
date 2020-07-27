@@ -81,13 +81,15 @@ module: ietf-isis-reverse-metric
 
 ** YANG Module
 
-The following is the YANG module for managing the IS-IS reverse metric
-functionality defined in [[RFC8500]].
+The following is the YANG module for managing the IS-IS reverse
+metric functionality defined in [[RFC8500]]. It imports modules from the
+following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
 
 #+NAME: test-validate-module
 #+CALL: validate-module(module=ietf-isis-reverse-metric)
 
 #+NAME: ietf-isis-reverse-metric
+#+HEADER: :var dep1=dep-babel :var dep2=fetch-yang-files
 #+HEADER: :file ietf-isis-reverse-metric.yang :results output file silent :cache yes
 #+begin_src yang :exports code
   module ietf-isis-reverse-metric {
@@ -95,8 +97,17 @@ functionality defined in [[RFC8500]].
     namespace "urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric";
     prefix isis-rmetric;
 
-    import ietf-routing { prefix "rt"; }
-    import ietf-isis { prefix "isis"; }
+    import ietf-routing {
+      prefix rt;
+      reference
+        "RFC8349: A YANG Data Model for Routing Management (NMDA Version)";
+    }
+    import ietf-isis {
+      prefix isis;
+      reference
+        "draft-ietf-isis-yang-isis-cfg-42:
+         YANG Data Model for IS-IS Protocol";
+    }
 
     organization
       "IETF LSR Working Group (LSR)";
@@ -139,6 +150,7 @@ functionality defined in [[RFC8500]].
       leaf metric {
         type isis:wide-metric;
         description "The reverse metric value.";
+        reference "RFC8500, Section 2";
       }
 
       container flags {
@@ -151,6 +163,7 @@ functionality defined in [[RFC8500]].
               advertises in the pseudo-node LSP for this interface.
               Otherwise it will only increment the metric for the
               advertising node in the pseudo-node LSP for this interface.";
+          reference "RFC8500, Section 2";
         }
         leaf allow-unreachable {
           type boolean;
@@ -159,6 +172,7 @@ functionality defined in [[RFC8500]].
               neighbor to increment the overall metric up to 2^24-1 rather
               than the lesser maximum of 2^24-2, and if done will cause
               traffic to stop using rather than avoid using the interface.";
+          reference "RFC8500, Section 2";
         }
       }
     }
@@ -175,6 +189,7 @@ functionality defined in [[RFC8500]].
             "If true and there is a TE metric defined for this
              interface then do not send the TE metric sub-TLV in the
              reverse metric TLV.";
+          reference "RFC8500, Section 3.5";
         }
       }
     }
@@ -187,6 +202,7 @@ functionality defined in [[RFC8500]].
         leaf te-metric {
           type uint32;
           description "The TE metric value from the sub-TLV if present.";
+          reference "RFC8500, Section 3.5";
         }
       }
     }
@@ -284,21 +300,96 @@ registration has been made:
 
 The YANG module specified in this document defines a schema for data
 that is designed to be accessed via network management protocols such
-as NETCONF [[RFC6241]] or RESTCONF [[RFC8040]]. The lowest NETCONF layer is
-the secure transport layer, and the mandatory-to-implement secure
-transport is Secure Shell (SSH) [[RFC6242]]. The lowest RESTCONF layer is
-HTTPS, and the mandatory-to-implement secure transport is TLS
+as NETCONF [[RFC6241]] or RESTCONF [[RFC8040]]. The lowest NETCONF layer
+is the secure transport layer, and the mandatory-to-implement secure
+transport is Secure Shell (SSH) [[RFC6242]]. The lowest RESTCONF layer
+is HTTPS, and the mandatory-to-implement secure transport is TLS
 [[RFC8446]].
 
-The Network Configuration Access Control Model (NACM) [[RFC8341]]
-provides the means to restrict access for particular NETCONF or
-RESTCONF users to a preconfigured subset of all available NETCONF or
-RESTCONF protocol operations and content.
+The NETCONF access control model [[RFC8341]] provides the means to
+restrict access for particular NETCONF or RESTCONF users to a
+preconfigured subset of all available NETCONF or RESTCONF protocol
+operations and content.
 
 The YANG module defined in this document can enable, disable and
 modify the behavior of metrics used by routing. For the security
 implications regarding these types of changes consult the [[RFC8500]]
 which defines the functionality.
+
+There are a number of data nodes defined in this YANG module that are
+writable/creatable/deletable (i.e., "config true", which is the
+default). These data nodes may be considered sensitive or vulnerable
+in some network environments. Write operations (e.g., edit-config) to
+these data nodes without proper protection can have a negative effect
+on network operations.
+
+These are the subtrees and data nodes and their
+sensitivity/vulnerability:
+
+#+begin_example
+Under "/rt:routing/rt:control-plane-protocols/" +
+      "rt:control-plane-protocol/isis:isis"
+
+  - /isis-rmetric:reverse-metric/isis-rmetric:enable-receive
+#+end_example
+
+#+begin_example
+Under "/rt:routing/rt:control-plane-protocols/" +
+      "rt:control-plane-protocol/isis:isis/" +
+      "isis:interfaces/isis:interface/" +
+      "isis-rmetric:reverse-metric"
+
+  - /isis-rmetric:metric
+  - /isis-rmetric:flags/isis-rmetric:whole-lan
+  - /isis-rmetric:flags/isis-rmetric:allow-unreachable
+  - /isis-rmetric:exclude-te-metric
+#+end_example
+
+#+begin_example
+Under "/rt:routing/rt:control-plane-protocols/" +
+      "rt:control-plane-protocol/isis:isis/" +
+      "isis:interfaces/isis:interface/" +
+      "isis:level-1/isis-rmetric:reverse-metric"
+
+  - /isis-rmetric:metric
+  - /isis-rmetric:flags/isis-rmetric:whole-lan
+  - /isis-rmetric:flags/isis-rmetric:allow-unreachable
+  - /isis-rmetric:exclude-te-metric
+#+end_example
+
+#+begin_example
+Under "/rt:routing/rt:control-plane-protocols/" +
+      "rt:control-plane-protocol/isis:isis/" +
+      "isis:interfaces/isis:interface/" +
+      "isis:level-2/isis-rmetric:reverse-metric"
+
+  - /isis-rmetric:metric
+  - /isis-rmetric:flags/isis-rmetric:whole-lan
+  - /isis-rmetric:flags/isis-rmetric:allow-unreachable
+  - /isis-rmetric:exclude-te-metric
+#+end_example
+
+Some of the readable data nodes in this YANG module may be considered
+sensitive or vulnerable in some network environments.  It is thus
+important to control read access (e.g., via get, get-config, or
+notification) to these data nodes.  These are the subtrees and data
+nodes and their sensitivity/vulnerability:
+
+All nodes are under the following subtree, so that prefix will be
+assume for each node description.
+
+#+begin_example
+Under "/rt:routing/rt:control-plane-protocols/" +
+      "rt:control-plane-protocol/isis:isis/" +
+      "isis:interfaces/isis:interface/" +
+      "isis:adjacencies/isis:adjacency/" +
+      "isis-rmetric:reverse-metric"
+
+    - /isis-rmetric:metric
+    - /isis-rmetric:flags/isis-rmetric:whole-lan
+    - /isis-rmetric:flags/isis-rmetric:allow-unreachable
+    - /isis-rmetric:te-metric
+#+end_example
 
 * Normative References
 ** ISO10589
@@ -312,8 +403,11 @@ which defines the functionality.
 ** RFC8040
 ** RFC8341
 ** RFC8342
+** RFC8349
 ** RFC8446
 ** RFC8500
+** I-D.ietf-isis-yang-isis-cfg
+
 * Informative References
 ** RFC8340
 * Examples
@@ -447,6 +541,13 @@ Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
     (org-babel-do-load-languages 'org-babel-load-languages '((shell . t)))
     (setq fill-column 69)
     (setq org-confirm-babel-evaluate nil)
+#+end_src
+
+#+name: fetch-yang-files
+#+begin_src shell :results none silent :exports none
+      curl -O https://raw.githubusercontent.com/YangModels/yang/master/experimental/ietf-extracted-YANG-modules/ietf-isis@2019-10-15.yang
+      curl -O https://raw.githubusercontent.com/YangModels/yang/master/standard/ietf/RFC/ietf-routing-types@2017-12-04.yang
+      curl -O https://raw.githubusercontent.com/YangModels/yang/master/standard/ietf/RFC/ietf-routing@2018-03-13.yang
 #+end_src
 
 #+NAME: generate-tree
