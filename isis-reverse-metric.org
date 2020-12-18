@@ -210,7 +210,7 @@ following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
     augment "/rt:routing/rt:control-plane-protocols/"
       +"rt:control-plane-protocol/"
       +"isis:isis" {
-      when "../rt:type = 'isis:isis'" {
+      when "derived-from-or-self(../rt:type, 'isis:isis')" {
         description
           "This augment is only valid when routing protocol instance
            type is 'isis'.";
@@ -235,7 +235,7 @@ following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
     augment "/rt:routing/rt:control-plane-protocols/"
       +"rt:control-plane-protocol/"
       +"isis:isis/isis:interfaces/isis:interface" {
-      when "../../../rt:type = 'isis:isis'" {
+      when "derived-from-or-self(../../../rt:type, 'isis:isis')" {
         description
           "This augment is only valid when routing protocol instance
            type is 'isis'.";
@@ -261,7 +261,7 @@ following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
       +"rt:control-plane-protocol/"
       +"isis:isis/isis:interfaces/isis:interface/"
       +"isis:adjacencies/isis:adjacency" {
-      when "../../../../../rt:type = 'isis:isis'" {
+      when "derived-from-or-self(../../../../../rt:type, 'isis:isis')" {
         description
           "This augment is only valid when routing protocol instance
            type is 'isis'";
@@ -412,7 +412,7 @@ Under "/rt:routing/rt:control-plane-protocols/" +
 ** RFC8340
 * Examples
 ** Example Enable XML
-Below is an example of YANG XML data to enable reverse metric processing.
+Below is an example of XML instance data to enable reverse metric processing.
 
 #+NAME: test-enable-xml-example
 #+CALL: validate-config(file=enable-xml-example, module=ietf-isis-reverse-metric, extra="/yang/iana-if-type.yang")
@@ -440,7 +440,7 @@ Below is an example of YANG XML data to enable reverse metric processing.
 #+end_src
 
 ** Example Use XML
-Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
+Below is an example of XML instance data for the ietf-isis-reverse-metric module.
 
 #+NAME: test-use-xml-example
 #+CALL: validate-config(file=xml-example, module=ietf-isis-reverse-metric, extra="/yang/iana-if-type.yang")
@@ -486,7 +486,7 @@ Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
 
 ** Example JSON
 
-Below is an example of YANG XML data for the ietf-isis-reverse-metric module.
+Below is an example of JSON instance data for the ietf-isis-reverse-metric module.
 
 #+NAME: test-json-example
 #+CALL: validate-config(file=json-example, module=ietf-isis-reverse-metric, extra="/yang/iana-if-type.yang")
