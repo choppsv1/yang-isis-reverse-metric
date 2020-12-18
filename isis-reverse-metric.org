@@ -7,7 +7,7 @@
 #+EMAIL: chopps@chopps.org
 #+AFFILIATION: LabN Consulting, L.L.C.
 #+RFC_NAME: draft-ietf-lsr-yang-isis-reverse-metric
-#+RFC_VERSION: 02
+#+RFC_VERSION: 03
 #+RFC_XML_VERSION: 3
 
 #+begin_abstract
