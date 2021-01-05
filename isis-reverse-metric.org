@@ -423,16 +423,17 @@ Below is an example of XML instance data to enable reverse metric processing.
   <rt:routing
       xmlns:rt="urn:ietf:params:xml:ns:yang:ietf-routing"
       xmlns:isis="urn:ietf:params:xml:ns:yang:ietf-isis"
-      xmlns:rm="urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric">
+      xmlns:isis-rmetric=
+      "urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric">
     <rt:control-plane-protocols>
       <rt:control-plane-protocol>
         <rt:type>isis:isis</rt:type>
         <rt:name>default</rt:name>
         <isis:isis>
           <isis:area-address>00</isis:area-address>
-          <rm:reverse-metric>
-            <rm:enable-receive>true</rm:enable-receive>
-          </rm:reverse-metric>
+          <isis-rmetric:reverse-metric>
+            <isis-rmetric:enable-receive>true</isis-rmetric:enable-receive>
+          </isis-rmetric:reverse-metric>
         </isis:isis>
       </rt:control-plane-protocol>
     </rt:control-plane-protocols>
@@ -459,7 +460,8 @@ Below is an example of XML instance data for the ietf-isis-reverse-metric module
   <rt:routing
       xmlns:rt="urn:ietf:params:xml:ns:yang:ietf-routing"
       xmlns:isis="urn:ietf:params:xml:ns:yang:ietf-isis"
-      xmlns:rm="urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric">
+      xmlns:isis-rmetric=
+      "urn:ietf:params:xml:ns:yang:ietf-isis-reverse-metric">
     <rt:control-plane-protocols>
       <rt:control-plane-protocol>
         <rt:type>isis:isis</rt:type>
@@ -469,13 +471,13 @@ Below is an example of XML instance data for the ietf-isis-reverse-metric module
           <isis:interfaces>
             <isis:interface>
               <isis:name>eth0</isis:name>
-              <rm:reverse-metric>
-                <rm:reverse-metric>
-                  <rm:metric>
+              <isis-rmetric:reverse-metric>
+                <isis-rmetric:reverse-metric>
+                  <isis-rmetric:metric>
                     65535
-                  </rm:metric>
-                </rm:reverse-metric>
-              </rm:reverse-metric>
+                  </isis-rmetric:metric>
+                </isis-rmetric:reverse-metric>
+              </isis-rmetric:reverse-metric>
             </isis:interface>
           </isis:interfaces>
         </isis:isis>
