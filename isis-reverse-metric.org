@@ -152,7 +152,6 @@ following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
         description "The reverse metric value.";
         reference "RFC8500, Section 2";
       }
-
       container flags {
         description "The reverse metric flag values.";
         leaf whole-lan {
@@ -192,7 +191,8 @@ following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
             "If true and there is a TE metric defined for this
              interface then do not send the TE metric sub-TLV in the
              reverse metric TLV.";
-          reference "RFC8500, Section 3.5";
+
+          reference "RFC8500, Section 2";
         }
       }
     }
@@ -206,7 +206,7 @@ following RFCs: [[RFC8349]], [[I-D.ietf-isis-yang-isis-cfg]].
           type uint32;
           description
             "The TE metric value from the sub-TLV if present.";
-          reference "RFC8500, Section 3.5";
+          reference "RFC8500, Section 2";
         }
       }
     }
@@ -329,10 +329,11 @@ writable/creatable/deletable (i.e., "config true", which is the
 default). These data nodes may be considered sensitive or vulnerable
 in some network environments. Write operations (e.g., edit-config) to
 these data nodes without proper protection can have a negative effect
-on network operations.
+on network operations. These YANG nodes correspond directly to the
+RFC 8500 functionality and the security considerations of the
+functionality are described in RFC 8500.
 
-These are the subtrees and data nodes and their
-sensitivity/vulnerability:
+These are the subtrees and data nodes:
 
 #+begin_example
 Under "/rt:routing/rt:control-plane-protocols/" +
@@ -378,13 +379,12 @@ Under "/rt:routing/rt:control-plane-protocols/" +
 #+end_example
 
 Some of the readable data nodes in this YANG module may be considered
-sensitive or vulnerable in some network environments.  It is thus
+sensitive or vulnerable in some network environments. It is thus
 important to control read access (e.g., via get, get-config, or
-notification) to these data nodes.  These are the subtrees and data
-nodes and their sensitivity/vulnerability:
-
-All nodes are under the following subtree, so that prefix will be
-assumed for each node description.
+notification) to these data nodes. These YANG nodes correspond
+directly to the RFC 8500 functionality and the security
+considerations of the functionality are described in RFC 8500. These
+are the subtrees and data nodes:
 
 #+begin_example
 Under "/rt:routing/rt:control-plane-protocols/" +
@@ -409,18 +409,18 @@ Under "/rt:routing/rt:control-plane-protocols/" +
    :END:
 ** RFC3688
 ** RFC6020
-** RFC6241
-** RFC6242
-** RFC8040
 ** RFC8341
 ** RFC8342
 ** RFC8349
-** RFC8446
 ** RFC8500
 ** I-D.ietf-isis-yang-isis-cfg
 
 * Informative References
+** RFC6241
+** RFC6242
+** RFC8040
 ** RFC8340
+** RFC8446
 * Examples
 ** Example Enable XML
 Below is an example of XML instance data to enable reverse metric processing.
